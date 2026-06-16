@@ -1,4 +1,3 @@
-name,href
 hsl2rgb,gen_jit_hsl2rgb
 rgb2hsl,gen_jit_rgb2hsl
 cell,gen_jit_cell

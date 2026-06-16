@@ -1,6 +1,6 @@
-# genexpr README
+# GenExprForVSCode
 
-This is the README for your extension "genexpr". After writing up a brief description, we recommend including the following sections.
+This is a VS Code extension based on https://github.com/larme/GenExprForVSCode, which was converted from https://github.com/emmanueljourdan/GenExprForSublime. As of June 2026, all 243 Gen operators have hover and completion support for documentation from Cycling 74’s [website](https://docs.cycling74.com/userguide/gen/_gen_overview/).
 
 ## Features
 
