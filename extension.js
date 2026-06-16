@@ -11,10 +11,12 @@ function createDocMarkdown(word, entry) {
   md.appendMarkdown(`## ${word}\n\n`);
   md.appendCodeblock(entry.syntax, "cpp");
   md.appendMarkdown(`\n${entry.description}`);
-  md.appendMarkdown(`\n### Attributes\n\n`);
+  if (entry.attributes) {
+    md.appendMarkdown(`\n### Attributes\n\n`);
+    md.appendMarkdown(`\n${entry.attributes}`);
+  }
 
-  md.appendMarkdown(`\n${entry.attributes}`);
-  md.appendMarkdown(`\n\n---\n[Official Reference](${url})`);
+  md.appendMarkdown(`\n\n---\n[Official Reference](${url})\n\n---\n`);
   md.isTrusted = true;
   return md;
 }
@@ -29,6 +31,23 @@ function activate(context) {
 
       if (entry) {
         return new vscode.Hover(createDocMarkdown(word, entry));
+      } else {
+        const jitWord = word + " (Jitter)";
+        const dspWord = word + " (DSP)";
+        const entryJitter = docs[jitWord];
+        const entryDSP = docs[dspWord];
+        if (entryJitter) {
+          if (entryDSP) {
+            return new vscode.Hover([
+              createDocMarkdown(dspWord, entryDSP),
+              createDocMarkdown(jitWord, entryJitter),
+            ]);
+          }
+          return new vscode.Hover(createDocMarkdown(jitWord, entryJitter));
+        }
+        if (entryDSP) {
+          return new vscode.Hover(createDocMarkdown(dspWord, entryDSP));
+        }
       }
       return null;
     },
