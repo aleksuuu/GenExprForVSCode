@@ -917,12 +917,6 @@
     "attributes": "",
     "suffix": "gen_dsp_data"
   },
-  "Data": {
-    "syntax": "{ arguments={name, dim, channels}, inlets={} }\n{ arguments={name, dim}, inlets={} }\n{ arguments={name}, inlets={} }",
-    "description": "Stores an array of sample data (64-bit floats) usable for sampling, wavetable synthesis and other purposes. The first argument specifies a name by which to refer to this data in other objects in the gen patcher (such as peek and poke); the second optional argument specifies the length of the array (default 512 samples); and the third optional argument specifies the number of channels (default 1). The first outlet sends the length of the buffer in samples; the second outlet sends the number of channels.",
-    "attributes": "",
-    "suffix": "gen_dsp_data"
-  },
   "dim (DSP)": {
     "syntax": "{ arguments={name}, inlets={} }",
     "description": "The length (in samples) of a data/buffer object. The first argument should be a name of a data or buffer object in the gen patcher.",

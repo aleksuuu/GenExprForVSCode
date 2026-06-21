@@ -27,29 +27,37 @@ function activate(context) {
     provideHover(document, position) {
       const range = document.getWordRangeAtPosition(position);
       const word = document.getText(range);
-      const entry = docs[word];
 
-      if (entry) {
-        return new vscode.Hover(createDocMarkdown(word, entry));
-      } else {
-        const jitWord = word + " (Jitter)";
-        const dspWord = word + " (DSP)";
-        const entryJitter = docs[jitWord];
-        const entryDSP = docs[dspWord];
-        if (entryJitter) {
-          if (entryDSP) {
-            return new vscode.Hover([
-              createDocMarkdown(dspWord, entryDSP),
-              createDocMarkdown(jitWord, entryJitter),
-            ]);
+      let wordFinder = (word) => {
+        const entry = docs[word];
+        if (entry) {
+          return new vscode.Hover(createDocMarkdown(word, entry));
+        } else {
+          const jitWord = word + " (Jitter)";
+          const dspWord = word + " (DSP)";
+          const entryJitter = docs[jitWord];
+          const entryDSP = docs[dspWord];
+          if (entryJitter) {
+            if (entryDSP) {
+              return new vscode.Hover([
+                createDocMarkdown(dspWord, entryDSP),
+                createDocMarkdown(jitWord, entryJitter),
+              ]);
+            }
+            return new vscode.Hover(createDocMarkdown(jitWord, entryJitter));
           }
-          return new vscode.Hover(createDocMarkdown(jitWord, entryJitter));
+          if (entryDSP) {
+            return new vscode.Hover(createDocMarkdown(dspWord, entryDSP));
+          }
         }
-        if (entryDSP) {
-          return new vscode.Hover(createDocMarkdown(dspWord, entryDSP));
-        }
+        return null;
+      };
+
+      let output = wordFinder(word);
+      if (output == null) {
+        output = wordFinder(word.charAt(0).toLowerCase() + word.slice(1)); // try with first letter capitalized
       }
-      return null;
+      return output;
     },
   });
 
@@ -66,17 +74,39 @@ function activate(context) {
             word,
             vscode.CompletionItemKind.Function,
           );
-
           // Inject the snippet syntax so pressing 'Tab' auto-fills parameters
           item.insertText = new vscode.SnippetString(entry.snippet);
-
           // Add short preview text in the menu list
           // item.detail = entry.syntax;
-
-          // Attach the rich documentation markdown popup window next to the menu
           item.documentation = createDocMarkdown(word, entry);
-
           completionItems.push(item);
+        }
+
+        const text = document.getText();
+        const discoveredVars = new Set();
+        let match;
+
+        const varRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*=/g;
+        while ((match = varRegex.exec(text)) !== null) {
+          discoveredVars.add(match[1]);
+        }
+
+        const declRegex =
+          /\b(buffer|data|delay|history|param|Buffer|Data|Delay|History|Param)\s+([a-zA-Z_][a-zA-Z0-9_]*)/g;
+
+        while ((match = declRegex.exec(text)) !== null) {
+          discoveredVars.add(match[1]);
+        }
+
+        for (const varName of discoveredVars) {
+          if (!docs[varName]) {
+            const item = new vscode.CompletionItem(
+              varName,
+              vscode.CompletionItemKind.Variable,
+            );
+            item.detail = "Local Variable";
+            completionItems.push(item);
+          }
         }
 
         return completionItems;
