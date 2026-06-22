@@ -22,42 +22,44 @@ function createDocMarkdown(word, entry) {
 }
 
 function activate(context) {
+  let wordFinder = (word) => {
+    const entry = docs[word];
+    if (entry) {
+      return new vscode.Hover(createDocMarkdown(word, entry));
+    } else {
+      const jitWord = word + " (Jitter)";
+      const dspWord = word + " (DSP)";
+      const entryJitter = docs[jitWord];
+      const entryDSP = docs[dspWord];
+      if (entryJitter) {
+        if (entryDSP) {
+          return new vscode.Hover([
+            createDocMarkdown(dspWord, entryDSP),
+            createDocMarkdown(jitWord, entryJitter),
+          ]);
+        }
+        return new vscode.Hover(createDocMarkdown(jitWord, entryJitter));
+      }
+      if (entryDSP) {
+        return new vscode.Hover(createDocMarkdown(dspWord, entryDSP));
+      }
+    }
+    const firstLetter = word.charAt(0);
+    if (
+      firstLetter === firstLetter.toUpperCase() &&
+      firstLetter !== firstLetter.toLowerCase()
+    ) {
+      return wordFinder(firstLetter.toLowerCase() + word.slice(1)); // try with first letter capitalized
+    }
+    return null;
+  };
   // 1. HOVER PROVIDER (For viewing info when hovering over existing code)
   let hoverProvider = vscode.languages.registerHoverProvider("genexpr", {
     provideHover(document, position) {
       const range = document.getWordRangeAtPosition(position);
       const word = document.getText(range);
 
-      let wordFinder = (word) => {
-        const entry = docs[word];
-        if (entry) {
-          return new vscode.Hover(createDocMarkdown(word, entry));
-        } else {
-          const jitWord = word + " (Jitter)";
-          const dspWord = word + " (DSP)";
-          const entryJitter = docs[jitWord];
-          const entryDSP = docs[dspWord];
-          if (entryJitter) {
-            if (entryDSP) {
-              return new vscode.Hover([
-                createDocMarkdown(dspWord, entryDSP),
-                createDocMarkdown(jitWord, entryJitter),
-              ]);
-            }
-            return new vscode.Hover(createDocMarkdown(jitWord, entryJitter));
-          }
-          if (entryDSP) {
-            return new vscode.Hover(createDocMarkdown(dspWord, entryDSP));
-          }
-        }
-        return null;
-      };
-
-      let output = wordFinder(word);
-      if (output == null) {
-        output = wordFinder(word.charAt(0).toLowerCase() + word.slice(1)); // try with first letter capitalized
-      }
-      return output;
+      return wordFinder(word);
     },
   });
 
@@ -95,11 +97,11 @@ function activate(context) {
           /\b(buffer|data|delay|history|param|Buffer|Data|Delay|History|Param)\s+([a-zA-Z_][a-zA-Z0-9_]*)/g;
 
         while ((match = declRegex.exec(text)) !== null) {
-          discoveredVars.add(match[1]);
+          discoveredVars.add(match[2]);
         }
 
         for (const varName of discoveredVars) {
-          if (!docs[varName]) {
+          if (!wordFinder(varName)) {
             const item = new vscode.CompletionItem(
               varName,
               vscode.CompletionItemKind.Variable,
