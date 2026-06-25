@@ -893,7 +893,7 @@
     "attributes": "",
     "suffix": "gen_common_noise"
   },
-  "buffer": {
+  "Buffer": {
     "syntax": "{ arguments={name, buffername}, inlets={} }\n{ arguments={name}, inlets={} }",
     "description": "References an external named buffer~ object. The first argument specifies a name by which to refer to this data in other objects in the gen patcher (such as peek and poke); the second optional argument specifies the name of the external buffer~ object to reference (if ommitted, the first argument name is used). The first outlet sends the length of the buffer in samples; the second outlet sends the number of channels.",
     "attributes": "",
@@ -911,7 +911,7 @@
     "attributes": "#### index *[enum]* *: freq* *(write-only)* \nSpecify the index mode: \"phase\" maps the input signal range 0..1 to the span of the buffer, \"freq\" cycles through the buffer at a frequency given by the input signal.\n\nPossible values:\n\n0 = 'phase'\n\n1 = 'freq'\n#### name *[string]* *(write-only)* \nSpecify the data or buffer object to use for playback. If not specified, cycle will use a built-in sine wavetable.\"\n",
     "suffix": "gen_dsp_cycle"
   },
-  "data": {
+  "Data": {
     "syntax": "{ arguments={name, dim, channels}, inlets={} }\n{ arguments={name, dim}, inlets={} }\n{ arguments={name}, inlets={} }",
     "description": "Stores an array of sample data (64-bit floats) usable for sampling, wavetable synthesis and other purposes. The first argument specifies a name by which to refer to this data in other objects in the gen patcher (such as peek and poke); the second optional argument specifies the length of the array (default 512 samples); and the third optional argument specifies the number of channels (default 1). The first outlet sends the length of the buffer in samples; the second outlet sends the number of channels.",
     "attributes": "",
@@ -1109,13 +1109,13 @@
     "attributes": "",
     "suffix": "gen_dsp_t60time"
   },
-  "delay": {
+  "Delay": {
     "syntax": "{ arguments={size, taps}, inlets={input, ...} }\n{ arguments={size}, inlets={input, ...} }\n{ arguments={}, inlets={input, ...} }",
     "description": "Delays a signal by a certain amount of time (specified in samples). The first argument specifies the maximum delay time (in samples, default samplerate). The second argument specifies the number of tap inlet/outlet pairs (default 1). The first inlet is the signal to be delayed. Additional inlets specify the delay time per tap (in samples). With @feedback 1, like history, delay allows feedback loops in the patcher, but minium delay is 1 sample. With @feedback 0, minimum delay time is zero samples (or more if @interp is cubic, spline, or spline6)",
     "attributes": "#### feedback *[bool]* *: 1* *(write-only)* \nSpecify whether the object can receive feedback signals (this applies to visual gen patching only). If set to 0, the delay object will not accept incoming feedback signals (unless there is another feedback delay or history object in the feedback path). With @feedback enabled, the minimum delay time is increased by 1 sample.\n#### interp *[enum]* *: linear* *(write-only)* \nSpecify the interpolation mode: \"none\" and \"step\" perform no interpolation, \"linear\" performs two-point linear interpolation, \"cosine\" performs two-point cosine interpolation, \"cubic\" performs four-point cubic interpolation, \"spline\" performs four-point Catmull-Rom spline interpolation, and \"spline6\" performs six-point (5th order) B-spline interpolation.\n\nPossible values:\n\n0 = 'none'\n\n1 = 'spline6'\n\n2 = 'step'\n\n3 = 'cosine'\n\n4 = 'cubic'\n\n5 = 'fastcubic'\n\n6 = 'linear'\n\n7 = 'spline'\n#### name *[string]* *(write-only)* \nSpecify the name of the delay line. This name is used in the generated code and for retaining delay data between edits.\n",
     "suffix": "gen_dsp_delay"
   },
-  "history": {
+  "History": {
     "syntax": "{ arguments={name, value}, inlets={} }\n{ arguments={name}, inlets={} }\n{ arguments={}, inlets={} }",
     "description": "The history operator allows feedback in the gen patcher through the insertion of a single-sample delay. The first argument is an optional name for the history operator, which allows it to also be set externally (in the same way as the param operator). The second argument specifies an initial value of stored history (defaults to zero).",
     "attributes": "",
